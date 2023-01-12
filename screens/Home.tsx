@@ -10,9 +10,13 @@ import {
 } from "native-base";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useState } from "react";
-import { Auth0ContextInterface, Auth0User, useAuth0 } from "react-native-auth0";
+import { useAuth0 } from "react-native-auth0";
+import { API_URL } from "@env";
+import { useGetLists } from "../query/useGetLists";
 
 export const Home = ({}: any) => {
+  const { getCredentials } = useAuth0();
+  const { isLoading, isError, data } = useGetLists();
   const [modalVisible, setModalVisible] = useState(false);
 
   return (
@@ -57,15 +61,37 @@ export const Home = ({}: any) => {
             size={"sm"}
             variant={"solid"}
             onPress={async () => {
-              console.log("hello");
+              const creds = await getCredentials();
+              const response = await fetch(`${API_URL}/list`, {
+                method: "POST",
+                body: JSON.stringify({
+                  name: "testing",
+                }),
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${creds.accessToken}`,
+                },
+              });
+
+              const json = await response.json();
+
+              console.log(json);
             }}
           >
             Add a List
           </Button>
         </Box>
-        <Text fontWeight="light" textAlign={"center"}>
-          There are currently no lists...
-        </Text>
+        {data?.data ? (
+          <>
+            {data.data.map((list: any) => (
+              <Text key={list.id}>{list.name}</Text>
+            ))}
+          </>
+        ) : (
+          <Text fontWeight="light" textAlign={"center"}>
+            There are currently no lists...
+          </Text>
+        )}
       </Box>
       <Fab
         onPress={() => {

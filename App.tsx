@@ -10,6 +10,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import SignIn from "./screens/SignIn";
 import { API_URL, AUTH0_DOMAIN, AUTH0_CLIENT_ID } from "@env";
 import { Profile } from "./screens/Profile";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 type TabNavRoutes = {
   Favorites: undefined;
@@ -22,14 +23,17 @@ const Tab = createBottomTabNavigator<TabNavRoutes>();
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const queryClient = new QueryClient();
   console.log(API_URL);
   return (
-    <Auth0Provider domain={AUTH0_DOMAIN} clientId={AUTH0_CLIENT_ID}>
-      <NativeBaseProvider>
-        <StatusBar style={"auto"} />
-        <Navigation />
-      </NativeBaseProvider>
-    </Auth0Provider>
+    <QueryClientProvider client={queryClient}>
+      <Auth0Provider domain={AUTH0_DOMAIN} clientId={AUTH0_CLIENT_ID}>
+        <NativeBaseProvider>
+          <StatusBar style={"auto"} />
+          <Navigation />
+        </NativeBaseProvider>
+      </Auth0Provider>
+    </QueryClientProvider>
   );
 }
 
