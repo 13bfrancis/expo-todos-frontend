@@ -12,11 +12,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useState } from "react";
 import { Auth0ContextInterface, Auth0User, useAuth0 } from "react-native-auth0";
 
-interface Auth extends Auth0ContextInterface {
-  user: Auth0User<{ custom: string }>;
-}
-
-const HomeScreen = ({}: any) => {
+export const Home = ({}: any) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   return (
@@ -83,5 +79,3 @@ const HomeScreen = ({}: any) => {
     </Box>
   );
 };
-
-export default HomeScreen;

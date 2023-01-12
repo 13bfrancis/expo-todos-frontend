@@ -3,7 +3,7 @@ import { Box, Button, Heading } from "native-base";
 import { useAuth0 } from "react-native-auth0";
 
 const SignIn = () => {
-  const { authorize, clearSession } = useAuth0();
+  const { authorize } = useAuth0();
   return (
     <Box safeArea alignItems={"center"}>
       <Heading textAlign={"center"} mb={"6"}>
@@ -13,7 +13,7 @@ const SignIn = () => {
         onPress={async () => {
           await authorize({ audience: AUTH0_AUDIENCE });
         }}
-        colorScheme={"amber"}
+        colorScheme={"blue"}
       >
         Sign in with Auth0
       </Button>

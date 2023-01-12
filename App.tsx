@@ -1,18 +1,20 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { NativeBaseProvider } from "native-base";
-import HomeScreen from "./screens/HomeScreen";
-import FavoritesScreen from "./screens/FavoritesScreen";
+import { Home } from "./screens/Home";
+import { Favorites } from "./screens/Favorites";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { StatusBar } from "expo-status-bar";
 import { useAuth0, Auth0Provider, Auth0User } from "react-native-auth0";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import SignIn from "./screens/SignIn";
 import { API_URL, AUTH0_DOMAIN, AUTH0_CLIENT_ID } from "@env";
+import { Profile } from "./screens/Profile";
 
 type TabNavRoutes = {
   Favorites: undefined;
   Home: undefined;
+  Profile: undefined;
 };
 
 //! TODO: Research react-native-animatable
@@ -43,6 +45,10 @@ const Navigation = () => {
             tabBarIcon: ({ size, color }) => {
               if (route.name === "Favorites") {
                 return <Ionicons name="heart" size={size} color={color} />;
+              } else if (route.name === "Profile") {
+                return (
+                  <Ionicons name="person-circle" size={size} color={color} />
+                );
               }
 
               return <Ionicons name="list-outline" size={size} color={color} />;
@@ -50,8 +56,9 @@ const Navigation = () => {
             headerShown: false,
           })}
         >
-          <Tab.Screen name="Home" component={HomeScreen} />
-          <Tab.Screen name="Favorites" component={FavoritesScreen} />
+          <Tab.Screen name="Home" component={Home} />
+          <Tab.Screen name="Favorites" component={Favorites} />
+          <Tab.Screen name="Profile" component={Profile} />
         </Tab.Navigator>
       ) : (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
