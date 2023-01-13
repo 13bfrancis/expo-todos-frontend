@@ -6,16 +6,13 @@ interface Auth extends Auth0ContextInterface {
 }
 
 export const Profile = () => {
-  const { user, clearCredentials }: Auth = useAuth0();
+  const { user, clearSession }: Auth = useAuth0();
 
   return (
     <Box safeArea alignItems={"center"} justifyContent="center">
       <Heading>Hello,</Heading>
       <Text>{user.name}</Text>
-      <Button
-        colorScheme={"blue"}
-        onPress={async () => await clearCredentials()}
-      >
+      <Button colorScheme={"blue"} onPress={async () => await clearSession()}>
         Sign Out
       </Button>
     </Box>

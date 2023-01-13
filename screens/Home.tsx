@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  Center,
   Fab,
   FlatList,
   Heading,
@@ -52,6 +51,7 @@ export const Home = ({}: any) => {
               borderBottomWidth={"2"}
               colorScheme="blue"
               value={listName}
+              isRequired
               onChangeText={(text) => setListName(text)}
             />
           </Modal.Body>
