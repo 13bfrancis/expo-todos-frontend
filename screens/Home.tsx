@@ -1,24 +1,35 @@
 import {
   Box,
   Button,
+  Center,
   Fab,
+  FlatList,
   Heading,
+  HStack,
   Icon,
+  IconButton,
   Input,
   Modal,
+  Pressable,
+  Spinner,
   Text,
+  VStack,
 } from "native-base";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useState } from "react";
-import { useAuth0 } from "react-native-auth0";
-import { API_URL } from "@env";
 import { useGetLists } from "../query/useGetLists";
+import { useAddList } from "../query/useAddList";
 
 export const Home = ({}: any) => {
-  const { getCredentials } = useAuth0();
-  const { isLoading, isError, data } = useGetLists();
+  const { data, status } = useGetLists();
+
+  const mutation = useAddList();
+
+  const [listName, setListName] = useState("");
+
   const [modalVisible, setModalVisible] = useState(false);
 
+  console.log("mutation", mutation.status);
   return (
     <Box safeArea flex={1}>
       <Modal
@@ -32,67 +43,77 @@ export const Home = ({}: any) => {
       >
         <Modal.Content>
           <Modal.CloseButton />
-          <Modal.Header>Add ToDo Item</Modal.Header>
+          <Modal.Header>Add List</Modal.Header>
           <Modal.Body>
             <Input
               variant="underlined"
-              placeholder="New Todo"
+              placeholder="New List"
               fontSize={"lg"}
               borderBottomWidth={"2"}
               colorScheme="blue"
+              value={listName}
+              onChangeText={(text) => setListName(text)}
             />
           </Modal.Body>
           <Modal.Footer>
-            <Button colorScheme={"blue"} borderRadius={"md"}>
-              Add Item
+            <Button
+              colorScheme={"blue"}
+              borderRadius={"md"}
+              onPress={() => {
+                mutation.mutate(listName);
+                setModalVisible(false);
+                setListName("");
+              }}
+            >
+              Add List
             </Button>
           </Modal.Footer>
         </Modal.Content>
       </Modal>
-      <Box px="16">
+      <VStack px="8" flex={1}>
         <Heading textAlign={"center"}>ToDo Lists</Heading>
-        <Box my={5} alignItems={"center"}>
-          <Button
-            leftIcon={
-              <Icon as={Ionicons} name="list" color="white" size={"md"} />
-            }
-            colorScheme="blue"
-            _text={{ fontSize: "md" }}
-            size={"sm"}
-            variant={"solid"}
-            onPress={async () => {
-              const creds = await getCredentials();
-              const response = await fetch(`${API_URL}/list`, {
-                method: "POST",
-                body: JSON.stringify({
-                  name: "testing",
-                }),
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${creds.accessToken}`,
-                },
-              });
-
-              const json = await response.json();
-
-              console.log(json);
-            }}
-          >
-            Add a List
-          </Button>
-        </Box>
-        {data?.data ? (
-          <>
-            {data.data.map((list: any) => (
-              <Text key={list.id}>{list.name}</Text>
-            ))}
-          </>
+        {data?.data && !mutation.isLoading ? (
+          <FlatList
+            mt="4"
+            mb="4"
+            renderItem={({ item }) => (
+              <Pressable onPress={() => console.log("pressed")}>
+                <HStack
+                  alignItems={"center"}
+                  background={"warmGray.100"}
+                  py="2"
+                  borderRadius={"sm"}
+                  mb="2"
+                  shadow={"1"}
+                >
+                  <IconButton
+                    alignItems={"center"}
+                    icon={
+                      <Icon
+                        as={Ionicons}
+                        name="trash-bin-outline"
+                        color="red.500"
+                      />
+                    }
+                  />
+                  <Text flex={1} fontSize={"lg"}>
+                    {item.name}
+                  </Text>
+                </HStack>
+              </Pressable>
+            )}
+            data={data.data}
+            keyExtractor={(item) => item.id}
+          />
         ) : (
-          <Text fontWeight="light" textAlign={"center"}>
-            There are currently no lists...
-          </Text>
+          <VStack alignItems={"center"} justifyContent="center" flex={1}>
+            <HStack space={2}>
+              <Spinner colorScheme={"blue"} />
+              <Heading color={"primary.500"}>Loading</Heading>
+            </HStack>
+          </VStack>
         )}
-      </Box>
+      </VStack>
       <Fab
         onPress={() => {
           setModalVisible(true);
